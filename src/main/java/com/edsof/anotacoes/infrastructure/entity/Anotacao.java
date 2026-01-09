@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -24,5 +26,7 @@ public class Anotacao {
     private String descricao;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "usuarioid", referencedColumnName = "id")
+    @Column(name = "datacad", nullable = false)
+    private LocalDate datacad;
 
 }
