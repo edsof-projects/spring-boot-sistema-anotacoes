@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,7 +15,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "tblusuarios")
 
-public class Usuarios {
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +28,8 @@ public class Usuarios {
     private String senha;
     @Column(name = "tipoacesso", length = 4)
     private String tipoacesso;
-    @Column(name = "datacad",length = )
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "usuarioid", referencedColumnName = "id")
+    @Column(name = "datacad", nullable = false)
+    private LocalDate datacad;
 
 }
 
