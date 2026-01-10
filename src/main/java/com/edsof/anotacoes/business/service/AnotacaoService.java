@@ -25,27 +25,37 @@ public class AnotacaoService {
                 .toList();
     }
 
-    public AnotacaoDTO cadastrar(Anotacao dto) {
+    public AnotacaoDTO buscarPorId(Long id) {
+        Anotacao anotacao = anotacaoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Anotação não encontrada"));
+        return toDTO(anotacao);
+    }
 
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+    public AnotacaoDTO cadastrar(AnotacaoDTO dto) {
+
+        if (dto.usuarioId() == null) {
+            throw new IllegalArgumentException("usuarioId é obrigatório");
+        }
+
+        Usuario usuario = usuarioRepository.findById(dto.usuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         Anotacao anotacao = new Anotacao();
-        anotacao.setTitulo(dto.getTitulo());
-        anotacao.setDescricao(dto.getDescricao());
+        anotacao.setTitulo(dto.titulo());
+        anotacao.setDescricao(dto.descricao());
         anotacao.setDatacad(LocalDate.now());
         anotacao.setUsuario(usuario);
 
         return toDTO(anotacaoRepository.save(anotacao));
     }
 
-    public AnotacaoDTO editar(Long id, Anotacao dto) {
+    public AnotacaoDTO editar(Long id, AnotacaoDTO dto) {
 
         Anotacao anotacao = anotacaoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Anotação não encontrada"));
 
-        anotacao.setTitulo(dto.getTitulo());
-        anotacao.setDescricao(dto.getDescricao());
+        anotacao.setTitulo(dto.titulo());
+        anotacao.setDescricao(dto.descricao());
 
         return toDTO(anotacaoRepository.save(anotacao));
     }
@@ -54,7 +64,7 @@ public class AnotacaoService {
         anotacaoRepository.deleteById(id);
     }
 
-    // 🔁 Conversões
+    // 🔁 Conversão Entity → DTO
     private AnotacaoDTO toDTO(Anotacao anotacao) {
         return new AnotacaoDTO(
                 anotacao.getId(),
@@ -64,5 +74,5 @@ public class AnotacaoService {
                 anotacao.getDatacad()
         );
     }
-}
 
+}

@@ -33,8 +33,5 @@ public class Anotacao {
     @Column(name = "datacad", nullable = false)
     private LocalDate datacad;
 
-    public Long getUsuarioId() {
-
-    }
 }
 
