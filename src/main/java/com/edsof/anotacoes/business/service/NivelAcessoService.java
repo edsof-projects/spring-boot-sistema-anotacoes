@@ -41,10 +41,17 @@ public class NivelAcessoService {
         return toDTO(nivelAcessoRepository.save(nivelAcesso));
     }
 
-    public NivelAcessoDTO editar(Long id, NivelAcessoDTO dto){
-        NivelAcesso nivelAcesso = new NivelAcesso();
+    public NivelAcessoDTO editar(NivelAcessoDTO dto, Long id){
+
+        NivelAcesso nivelAcesso = nivelAcessoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Nível de acesso não encontrado"));
+
+        // atualiza apenas os campos editáveis
         nivelAcesso.setTipo(dto.tipo());
-        return toDTO(nivelAcessoRepository.save(nivelAcesso));
+
+        NivelAcesso nivelAcessoAtualizado = nivelAcessoRepository.save(nivelAcesso);
+
+        return toDTO(nivelAcessoRepository.save(nivelAcessoAtualizado));
     }
 
     public void excluir(Long id){

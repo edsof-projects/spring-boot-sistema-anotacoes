@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "nivelacesso")
+@Table(name = "tblnivelacesso")
 public class NivelAcesso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
