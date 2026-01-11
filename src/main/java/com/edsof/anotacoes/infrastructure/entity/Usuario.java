@@ -24,10 +24,10 @@ public class Usuario {
     private String nome;
     @Column(name = "email", length = 100)
     private String email;
-    @Column(name = "senha", length = 15)
+    @Column(name = "senha", length = 100)
     private String senha;
-    @Column(name = "tipoacesso", length = 4)
-    private String tipoacesso;
+    @Column(name = "nivelacessoid")
+    private Integer nivelacessoid;
     @Column(name = "datacad", nullable = false)
     private LocalDate datacad;
 
