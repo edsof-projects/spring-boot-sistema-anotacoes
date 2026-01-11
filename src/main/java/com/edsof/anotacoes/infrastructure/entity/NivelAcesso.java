@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "nivelacesso")
-public class Nivelacesso {
+public class NivelAcesso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
