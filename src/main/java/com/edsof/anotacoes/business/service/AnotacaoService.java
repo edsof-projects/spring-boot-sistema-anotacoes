@@ -57,7 +57,9 @@ public class AnotacaoService {
         anotacao.setTitulo(dto.titulo());
         anotacao.setDescricao(dto.descricao());
 
-        return toDTO(anotacaoRepository.save(anotacao));
+        Anotacao anotacaoAtualizada = anotacaoRepository.save(anotacao);
+
+        return toDTO(anotacaoAtualizada);
     }
 
     public void excluir(Long id) {
