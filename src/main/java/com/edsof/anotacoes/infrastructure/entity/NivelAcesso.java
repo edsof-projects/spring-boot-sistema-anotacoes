@@ -16,6 +16,7 @@ public class NivelAcesso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "tipo", length = 30)
+
+    @Column(name = "tipo", length = 30, unique = true, nullable = false)
     private String tipo;
 }
