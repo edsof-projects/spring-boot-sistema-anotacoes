@@ -38,7 +38,7 @@ public class UsuarioService {
         }
 
         if (usuarioRepository.existsByEmail(dto.email())) {
-            throw new RuntimeException("Email já cadastrado");
+            throw new RuntimeException("Duplicidade : o email "+dto.email()+" já esta cadastrado");
         }
 
         NivelAcesso nivelAcesso = nivelAcessoRepository.findById(dto.nivelAcessoId())
