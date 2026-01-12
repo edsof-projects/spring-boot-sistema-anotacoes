@@ -37,6 +37,10 @@ public class UsuarioService {
             throw new RuntimeException("nivelAcessoId é obrigatório");
         }
 
+        if (usuarioRepository.existsByEmail(dto.email())) {
+            throw new RuntimeException("Email já cadastrado");
+        }
+
         NivelAcesso nivelAcesso = nivelAcessoRepository.findById(dto.nivelAcessoId())
                 .orElseThrow(() -> new RuntimeException("Nível de acesso não encontrado"));
 
