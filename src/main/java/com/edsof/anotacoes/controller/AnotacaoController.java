@@ -15,9 +15,16 @@ public class AnotacaoController {
 
     private final AnotacaoService anotacaoService;
 
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping
     public List<AnotacaoDTO> listarTodas() {
         return anotacaoService.listarTodas();
+    }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping("/{id}")
+    public AnotacaoDTO buscarPorId(@PathVariable Long id) {
+        return anotacaoService.buscarPorId(id);
     }
 
     @PostMapping
@@ -25,12 +32,7 @@ public class AnotacaoController {
         return anotacaoService.cadastrar(dto);
     }
 
-    @GetMapping("/{id}")
-    public AnotacaoDTO buscarPorId(@PathVariable Long id) {
-        return anotacaoService.buscarPorId(id);
-    }
-
-
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PutMapping("/{id}")
     public AnotacaoDTO editar(
             @PathVariable Long id,
@@ -38,6 +40,7 @@ public class AnotacaoController {
         return anotacaoService.editar(id, dto);
     }
 
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         anotacaoService.excluir(id);

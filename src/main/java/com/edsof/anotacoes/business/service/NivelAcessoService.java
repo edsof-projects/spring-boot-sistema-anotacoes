@@ -46,7 +46,7 @@ public class NivelAcessoService {
         NivelAcesso nivelAcesso = nivelAcessoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Nível de acesso não encontrado"));
 
-        // atualiza apenas os campos editáveis
+        // atualiza os campos editáveis
         nivelAcesso.setTipo(dto.tipo());
 
         NivelAcesso nivelAcessoAtualizado = nivelAcessoRepository.save(nivelAcesso);
