@@ -4,6 +4,7 @@ import com.edsof.anotacoes.infrastructure.dto.UsuarioEntradaDTO;
 import com.edsof.anotacoes.infrastructure.dto.UsuarioSaidaDTO;
 import com.edsof.anotacoes.infrastructure.entity.NivelAcesso;
 import com.edsof.anotacoes.infrastructure.entity.Usuario;
+import com.edsof.anotacoes.infrastructure.exceptions.ConflictException;
 import com.edsof.anotacoes.infrastructure.repository.NivelAcessoRepository;
 import com.edsof.anotacoes.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -69,8 +70,28 @@ public class UsuarioService {
 
     // CREATE
     public UsuarioSaidaDTO cadastrar(UsuarioEntradaDTO dto) {
-        Usuario usuario = toEntity(dto);
-        return toSaidaDTO(usuarioRepository.save(usuario));
+        try {
+            emailExiste(dto.email());
+            Usuario usuario = toEntity(dto);
+            return toSaidaDTO(usuarioRepository.save(usuario));
+        }catch (ConflictException e){
+            throw  new ConflictException("Email já cadastrado", e.getCause());
+        }
+    }
+
+    public boolean verificaEmailExistente(String email){
+        return usuarioRepository.existsByEmail(email);
+    }
+
+    public void emailExiste(String email){
+        try {
+            boolean existe = verificaEmailExistente(email);
+            if (existe){
+                throw new ConflictException("Duplicidade : o email "+email+" já esta cadastrado");
+            }
+        }catch (ConflictException e){
+            throw  new ConflictException("Email já cadastrado", e.getCause());
+        }
     }
 
     // UPDATE (sem senha)

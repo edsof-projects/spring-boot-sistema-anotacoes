@@ -30,8 +30,8 @@ public class Usuario {
     @Column(name = "senha", length = 100, nullable = false)
     private String senha;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "nivelacessoid", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "nivelacessoid", referencedColumnName = "id", nullable = false)
     private NivelAcesso nivelAcesso;
 
     @Column(name = "datacad", nullable = false)
