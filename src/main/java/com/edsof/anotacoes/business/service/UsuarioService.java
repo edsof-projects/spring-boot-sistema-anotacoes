@@ -8,6 +8,7 @@ import com.edsof.anotacoes.infrastructure.exceptions.ConflictException;
 import com.edsof.anotacoes.infrastructure.repository.NivelAcessoRepository;
 import com.edsof.anotacoes.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,6 +20,8 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final NivelAcessoRepository nivelAcessoRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     // Entity → DTO de SAÍDA
     private UsuarioSaidaDTO toSaidaDTO(Usuario usuario) {
@@ -38,9 +41,9 @@ public class UsuarioService {
             throw new RuntimeException("nivelAcessoId é obrigatório");
         }
 
-        if (usuarioRepository.existsByEmail(dto.email())) {
-            throw new RuntimeException("Duplicidade : o email "+dto.email()+" já esta cadastrado");
-        }
+//        if (usuarioRepository.existsByEmail(dto.email())) {
+//            throw new RuntimeException("Duplicidade : o email "+dto.email()+" já esta cadastrado");
+//        }
 
         NivelAcesso nivelAcesso = nivelAcessoRepository.findById(dto.nivelAcessoId())
                 .orElseThrow(() -> new RuntimeException("Nível de acesso não encontrado"));
@@ -48,7 +51,7 @@ public class UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
-        usuario.setSenha(dto.senha());
+        usuario.setSenha(passwordEncoder.encode(dto.senha()));
         usuario.setNivelAcesso(nivelAcesso);
         usuario.setDatacad(LocalDate.now());
 

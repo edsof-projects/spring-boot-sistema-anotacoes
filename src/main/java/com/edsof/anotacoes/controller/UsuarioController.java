@@ -30,8 +30,8 @@ public class UsuarioController {
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping
-    public UsuarioSaidaDTO cadastrar(@RequestBody UsuarioEntradaDTO dto) {
-        return usuarioService.cadastrar(dto);
+    public ResponseEntity<UsuarioSaidaDTO> cadastrar(@RequestBody UsuarioEntradaDTO dto) {
+        return ResponseEntity.ok(usuarioService.cadastrar(dto));
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
