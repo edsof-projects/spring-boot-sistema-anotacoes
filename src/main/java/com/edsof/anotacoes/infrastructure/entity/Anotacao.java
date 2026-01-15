@@ -26,8 +26,8 @@ public class Anotacao {
     @Column(name = "descricao", length = 100, nullable = false)
     private String descricao;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuarioid", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "usuarioid", referencedColumnName = "id", nullable = false)
     private Usuario usuario;
 
     @Column(name = "datacad", nullable = false)

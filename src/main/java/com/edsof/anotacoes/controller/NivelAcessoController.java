@@ -1,7 +1,8 @@
 package com.edsof.anotacoes.controller;
 
 import com.edsof.anotacoes.business.service.NivelAcessoService;
-import com.edsof.anotacoes.infrastructure.dto.NivelAcessoDTO;
+import com.edsof.anotacoes.infrastructure.dto.NivelAcessoEntradaDTO;
+import com.edsof.anotacoes.infrastructure.dto.NivelAcessoSaidaDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,31 +16,26 @@ public class NivelAcessoController {
 
     private final NivelAcessoService nivelAcessoService;
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping
-    public List<NivelAcessoDTO>listarTodos(){
+    public List<NivelAcessoSaidaDTO>listarTodos(){
         return nivelAcessoService.listarTodos();
     }
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping("/{id}")
-    public NivelAcessoDTO buscarPorId(@PathVariable Long id){
+    public NivelAcessoSaidaDTO buscarPorId(@PathVariable Long id){
         return nivelAcessoService.buscarPorId(id);
     }
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping
-    public NivelAcessoDTO cadastrar(@RequestBody NivelAcessoDTO dto){
+    public NivelAcessoSaidaDTO cadastrar(@RequestBody NivelAcessoEntradaDTO dto){
         return nivelAcessoService.cadastrar(dto);
     }
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PutMapping("/{id}")
-    public NivelAcessoDTO editar(@RequestBody NivelAcessoDTO dto, @PathVariable Long id){
+    public NivelAcessoSaidaDTO editar(@RequestBody NivelAcessoSaidaDTO dto, @PathVariable Long id){
         return nivelAcessoService.editar(dto, id);
     }
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir (@PathVariable Long id){
         nivelAcessoService.excluir(id);

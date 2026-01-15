@@ -1,7 +1,8 @@
 package com.edsof.anotacoes.controller;
 
 import com.edsof.anotacoes.business.service.AnotacaoService;
-import com.edsof.anotacoes.infrastructure.dto.AnotacaoDTO;
+import com.edsof.anotacoes.infrastructure.dto.AnotacaoEntradaDTO;
+import com.edsof.anotacoes.infrastructure.dto.AnotacaoSaidaDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,32 +16,26 @@ public class AnotacaoController {
 
     private final AnotacaoService anotacaoService;
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping
-    public List<AnotacaoDTO> listarTodas() {
+    public List<AnotacaoSaidaDTO> listarTodas() {
         return anotacaoService.listarTodas();
     }
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping("/{id}")
-    public AnotacaoDTO buscarPorId(@PathVariable Long id) {
+    public AnotacaoSaidaDTO buscarPorId(@PathVariable Long id) {
         return anotacaoService.buscarPorId(id);
     }
 
     @PostMapping
-    public AnotacaoDTO cadastrar(@RequestBody AnotacaoDTO dto) {
-        return anotacaoService.cadastrar(dto);
+    public ResponseEntity<AnotacaoSaidaDTO> cadastrar(@RequestBody AnotacaoEntradaDTO dto) {
+        return ResponseEntity.ok(anotacaoService.cadastrar(dto));
     }
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PutMapping("/{id}")
-    public AnotacaoDTO editar(
-            @PathVariable Long id,
-            @RequestBody AnotacaoDTO dto) {
-        return anotacaoService.editar(id, dto);
+    public AnotacaoSaidaDTO editar(@RequestBody AnotacaoSaidaDTO dto, @PathVariable Long id){
+        return anotacaoService.editar(dto, id);
     }
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         anotacaoService.excluir(id);

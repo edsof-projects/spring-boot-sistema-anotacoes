@@ -22,7 +22,6 @@ public class UsuarioService {
     private final NivelAcessoRepository nivelAcessoRepository;
     private final PasswordEncoder passwordEncoder;
 
-
     // Entity → DTO de SAÍDA
     private UsuarioSaidaDTO toSaidaDTO(Usuario usuario) {
         return new UsuarioSaidaDTO(
@@ -40,10 +39,6 @@ public class UsuarioService {
         if (dto.nivelAcessoId() == null) {
             throw new RuntimeException("nivelAcessoId é obrigatório");
         }
-
-//        if (usuarioRepository.existsByEmail(dto.email())) {
-//            throw new RuntimeException("Duplicidade : o email "+dto.email()+" já esta cadastrado");
-//        }
 
         NivelAcesso nivelAcesso = nivelAcessoRepository.findById(dto.nivelAcessoId())
                 .orElseThrow(() -> new RuntimeException("Nível de acesso não encontrado"));
