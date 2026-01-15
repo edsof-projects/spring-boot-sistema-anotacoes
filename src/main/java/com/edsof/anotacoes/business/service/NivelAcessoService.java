@@ -1,6 +1,7 @@
 package com.edsof.anotacoes.business.service;
 
-import com.edsof.anotacoes.infrastructure.dto.NivelAcessoDTO;
+import com.edsof.anotacoes.infrastructure.dto.NivelAcessoEntradaDTO;
+import com.edsof.anotacoes.infrastructure.dto.NivelAcessoSaidaDTO;
 import com.edsof.anotacoes.infrastructure.entity.NivelAcesso;
 import com.edsof.anotacoes.infrastructure.repository.NivelAcessoRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,34 +15,43 @@ public class NivelAcessoService {
 
     private final NivelAcessoRepository nivelAcessoRepository;
 
-    // 🔁 Conversão Entity → DTO
-    public NivelAcessoDTO toDTO(NivelAcesso nivelAcesso) {
-        return new NivelAcessoDTO(
-                nivelAcesso.getId(),
-                nivelAcesso.getTipo()
+    // Entity → DTO de SAÍDA
+    private NivelAcessoSaidaDTO toSaidaDTO(NivelAcesso nivelacesso) {
+        return new NivelAcessoSaidaDTO(
+                nivelacesso.getId(),
+                nivelacesso.getTipo()
         );
     }
 
-    public List<NivelAcessoDTO> listarTodos(){
+    // DTO de ENTRADA → Entity
+    private NivelAcesso toEntity(NivelAcessoEntradaDTO dto) {
+
+        NivelAcesso nivelAcesso = new NivelAcesso();
+        nivelAcesso.setTipo(dto.tipo());
+
+        return nivelAcesso;
+    }
+
+    public List<NivelAcessoSaidaDTO> listarTodos(){
         return nivelAcessoRepository.findAll()
                 .stream()
-                .map(this::toDTO)
+                .map(this::toSaidaDTO)
                 .toList();
     }
 
-    public NivelAcessoDTO buscarPorId(Long id){
+    public NivelAcessoSaidaDTO buscarPorId(Long id){
         NivelAcesso nivelAcesso = nivelAcessoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Nivel de Acesso não encontrado!"));
-        return toDTO(nivelAcesso);
+        return toSaidaDTO(nivelAcesso);
     }
 
-    public NivelAcessoDTO cadastrar(NivelAcessoDTO dto){
+    public NivelAcessoSaidaDTO cadastrar(NivelAcessoEntradaDTO dto){
         NivelAcesso nivelAcesso = new NivelAcesso();
         nivelAcesso.setTipo(dto.tipo());
-        return toDTO(nivelAcessoRepository.save(nivelAcesso));
+        return toSaidaDTO(nivelAcessoRepository.save(nivelAcesso));
     }
 
-    public NivelAcessoDTO editar(NivelAcessoDTO dto, Long id){
+    public NivelAcessoSaidaDTO editar(NivelAcessoSaidaDTO dto, Long id){
 
         NivelAcesso nivelAcesso = nivelAcessoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Nível de acesso não encontrado"));
@@ -51,7 +61,7 @@ public class NivelAcessoService {
 
         NivelAcesso nivelAcessoAtualizado = nivelAcessoRepository.save(nivelAcesso);
 
-        return toDTO(nivelAcessoRepository.save(nivelAcessoAtualizado));
+        return toSaidaDTO(nivelAcessoRepository.save(nivelAcessoAtualizado));
     }
 
     public void excluir(Long id){

@@ -1,6 +1,7 @@
 package com.edsof.anotacoes.business.service;
 
-import com.edsof.anotacoes.infrastructure.dto.AnotacaoDTO;
+import com.edsof.anotacoes.infrastructure.dto.AnotacaoEntradaDTO;
+import com.edsof.anotacoes.infrastructure.dto.AnotacaoSaidaDTO;
 import com.edsof.anotacoes.infrastructure.entity.Anotacao;
 import com.edsof.anotacoes.infrastructure.entity.Usuario;
 import com.edsof.anotacoes.infrastructure.repository.AnotacaoRepository;
@@ -18,38 +19,57 @@ public class AnotacaoService {
     private final AnotacaoRepository anotacaoRepository;
     private final UsuarioRepository usuarioRepository;
 
-    public List<AnotacaoDTO> listarTodas() {
-        return anotacaoRepository.findAll()
-                .stream()
-                .map(this::toDTO)
-                .toList();
+    // Entity → DTO de SAÍDA
+    private AnotacaoSaidaDTO toSaidaDTO(Anotacao anotacao) {
+        return new AnotacaoSaidaDTO(
+                anotacao.getId(),
+                anotacao.getTitulo(),
+                anotacao.getDescricao(),
+                anotacao.getUsuario().getId(),
+                anotacao.getDatacad()
+        );
     }
 
-    public AnotacaoDTO buscarPorId(Long id) {
-        Anotacao anotacao = anotacaoRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Anotação não encontrada"));
-        return toDTO(anotacao);
-    }
-
-    public AnotacaoDTO cadastrar(AnotacaoDTO dto) {
+    // DTO de ENTRADA → Entity
+    private Anotacao toEntity(AnotacaoEntradaDTO dto) {
 
         if (dto.usuarioId() == null) {
-            throw new IllegalArgumentException("usuarioId é obrigatório");
+            throw new RuntimeException("usuarioId é obrigatório");
         }
 
         Usuario usuario = usuarioRepository.findById(dto.usuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Id do usuário não encontrado"));
 
         Anotacao anotacao = new Anotacao();
         anotacao.setTitulo(dto.titulo());
         anotacao.setDescricao(dto.descricao());
-        anotacao.setDatacad(LocalDate.now());
         anotacao.setUsuario(usuario);
+        anotacao.setDatacad(LocalDate.now());
 
-        return toDTO(anotacaoRepository.save(anotacao));
+        return anotacao;
     }
 
-    public AnotacaoDTO editar(Long id, AnotacaoDTO dto) {
+    public List<AnotacaoSaidaDTO> listarTodas() {
+        return anotacaoRepository.findAll()
+                .stream()
+                .map(this::toSaidaDTO)
+                .toList();
+    }
+
+    public AnotacaoSaidaDTO buscarPorId(Long id) {
+        Anotacao anotacao = anotacaoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Anotação não encontrada"));
+        return toSaidaDTO(anotacao);
+    }
+
+    // CREATE
+    public AnotacaoSaidaDTO cadastrar(AnotacaoEntradaDTO dto) {
+       Anotacao anotacao = toEntity(dto);
+       return toSaidaDTO(anotacaoRepository.save(anotacao));
+    }
+
+    // UPDATE (sem senha)
+    public AnotacaoSaidaDTO editar(AnotacaoSaidaDTO dto, Long id) {
 
         Anotacao anotacao = anotacaoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Anotação não encontrada"));
@@ -57,24 +77,11 @@ public class AnotacaoService {
         anotacao.setTitulo(dto.titulo());
         anotacao.setDescricao(dto.descricao());
 
-        Anotacao anotacaoAtualizada = anotacaoRepository.save(anotacao);
-
-        return toDTO(anotacaoAtualizada);
+        return toSaidaDTO(anotacaoRepository.save(anotacao));
     }
 
     public void excluir(Long id) {
         anotacaoRepository.deleteById(id);
-    }
-
-    // 🔁 Conversão Entity → DTO
-    private AnotacaoDTO toDTO(Anotacao anotacao) {
-        return new AnotacaoDTO(
-                anotacao.getId(),
-                anotacao.getTitulo(),
-                anotacao.getDescricao(),
-                anotacao.getUsuario().getId(),
-                anotacao.getDatacad()
-        );
     }
 
 }
