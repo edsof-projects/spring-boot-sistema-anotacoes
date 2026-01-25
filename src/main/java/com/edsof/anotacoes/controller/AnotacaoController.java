@@ -4,6 +4,7 @@ import com.edsof.anotacoes.business.service.AnotacaoService;
 import com.edsof.anotacoes.infrastructure.dto.AnotacaoEntradaDTO;
 import com.edsof.anotacoes.infrastructure.dto.AnotacaoSaidaDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class AnotacaoController {
 
     @GetMapping
     public List<AnotacaoSaidaDTO> listarTodas() {
-        return anotacaoService.listarTodas();
+        return anotacaoService.listarTodos();
     }
 
     @GetMapping("/{id}")
@@ -27,8 +28,9 @@ public class AnotacaoController {
     }
 
     @PostMapping
-    public ResponseEntity<AnotacaoSaidaDTO> cadastrar(@RequestBody AnotacaoEntradaDTO dto) {
-        return ResponseEntity.ok(anotacaoService.cadastrar(dto));
+    public ResponseEntity<Void> cadastrar(@RequestBody AnotacaoEntradaDTO dto) {
+        anotacaoService.cadastrar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/{id}")

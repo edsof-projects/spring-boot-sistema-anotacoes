@@ -20,10 +20,10 @@ public class Anotacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "titulo", length = 100, nullable = false)
+    @Column(name = "titulo", length = 200, nullable = false)
     private String titulo;
 
-    @Column(name = "descricao", length = 100, nullable = false)
+    @Column(name = "descricao", columnDefinition = "TEXT",nullable = false)
     private String descricao;
 
     @ManyToOne

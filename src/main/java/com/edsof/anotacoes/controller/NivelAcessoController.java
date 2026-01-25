@@ -32,7 +32,7 @@ public class NivelAcessoController {
     }
 
     @PutMapping("/{id}")
-    public NivelAcessoSaidaDTO editar(@RequestBody NivelAcessoSaidaDTO dto, @PathVariable Long id){
+    public NivelAcessoSaidaDTO editar(@RequestBody NivelAcessoEntradaDTO dto, @PathVariable Long id){
         return nivelAcessoService.editar(dto, id);
     }
 
