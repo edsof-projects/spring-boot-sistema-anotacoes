@@ -18,9 +18,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioRepository     usuarioRepository;
     private final NivelAcessoRepository nivelAcessoRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder       passwordEncoder;
 
     // Entity → DTO de SAÍDA
     private UsuarioSaidaDTO toSaidaDTO(Usuario usuario) {
@@ -28,8 +28,8 @@ public class UsuarioService {
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
-                usuario.getNivelAcesso().getId(),
-                usuario.getDatacad()
+                usuario.getNivelAcesso().getTipo(),
+                usuario.getNivelAcesso().getId()
         );
     }
 
@@ -52,12 +52,9 @@ public class UsuarioService {
 
         return usuario;
     }
-    
+
     public List<UsuarioSaidaDTO> listarTodos() {
-        return usuarioRepository.findAll()
-                .stream()
-                .map(this::toSaidaDTO)
-                .toList();
+        return usuarioRepository.listarUsuarios();
     }
 
     public UsuarioSaidaDTO buscarPorId(Long id) {

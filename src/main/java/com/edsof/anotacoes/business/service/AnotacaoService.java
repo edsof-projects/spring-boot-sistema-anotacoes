@@ -26,7 +26,7 @@ public class AnotacaoService {
                 anotacao.getTitulo(),
                 anotacao.getDescricao(),
                 anotacao.getUsuario().getId(),
-                anotacao.getDatacad()
+                anotacao.getUsuario().getNome()
         );
     }
 
@@ -49,11 +49,8 @@ public class AnotacaoService {
         return anotacao;
     }
 
-    public List<AnotacaoSaidaDTO> listarTodas() {
-        return anotacaoRepository.findAll()
-                .stream()
-                .map(this::toSaidaDTO)
-                .toList();
+    public List<AnotacaoSaidaDTO> listarTodos() {
+        return anotacaoRepository.listarAnotacoes();
     }
 
     public AnotacaoSaidaDTO buscarPorId(Long id) {
@@ -63,10 +60,19 @@ public class AnotacaoService {
     }
 
     // CREATE
-    public AnotacaoSaidaDTO cadastrar(AnotacaoEntradaDTO dto) {
-       Anotacao anotacao = toEntity(dto);
-       return toSaidaDTO(anotacaoRepository.save(anotacao));
+    public Anotacao cadastrar(AnotacaoEntradaDTO dto) {
+
+        Usuario usuario = usuarioRepository.findById(dto.usuarioId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Anotacao anotacao = new Anotacao();
+        anotacao.setTitulo(dto.titulo());
+        anotacao.setDescricao(dto.descricao());
+        anotacao.setUsuario(usuario);
+        anotacao.setDatacad(LocalDate.now());
+        return anotacaoRepository.save(anotacao);
     }
+
 
     // UPDATE (sem senha)
     public AnotacaoSaidaDTO editar(AnotacaoSaidaDTO dto, Long id) {

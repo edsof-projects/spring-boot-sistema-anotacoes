@@ -28,15 +28,12 @@ public class NivelAcessoService {
 
         NivelAcesso nivelAcesso = new NivelAcesso();
         nivelAcesso.setTipo(dto.tipo());
-
         return nivelAcesso;
+
     }
 
-    public List<NivelAcessoSaidaDTO> listarTodos(){
-        return nivelAcessoRepository.findAll()
-                .stream()
-                .map(this::toSaidaDTO)
-                .toList();
+    public List<NivelAcessoSaidaDTO> listarTodos() {
+        return nivelAcessoRepository.listarAcessos();
     }
 
     public NivelAcessoSaidaDTO buscarPorId(Long id){
@@ -46,23 +43,42 @@ public class NivelAcessoService {
     }
 
     public NivelAcessoSaidaDTO cadastrar(NivelAcessoEntradaDTO dto){
+        if (dto.tipo() == null || dto.tipo().isBlank()) {
+            throw new RuntimeException("O tipo do nível de acesso é obrigatório");
+        }
+
+        String tipoNormalizado = dto.tipo().trim().toUpperCase();
+
+        if (nivelAcessoRepository.existsByTipo(tipoNormalizado)) {
+            throw new RuntimeException("Nível de acesso "+dto.tipo()+" já cadastrado");
+        }
+
         NivelAcesso nivelAcesso = new NivelAcesso();
-        nivelAcesso.setTipo(dto.tipo());
+        nivelAcesso.setTipo(tipoNormalizado);
+
         return toSaidaDTO(nivelAcessoRepository.save(nivelAcesso));
+
     }
 
-    public NivelAcessoSaidaDTO editar(NivelAcessoSaidaDTO dto, Long id){
+    public NivelAcessoSaidaDTO editar(NivelAcessoEntradaDTO dto, Long id) {
 
         NivelAcesso nivelAcesso = nivelAcessoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Nível de acesso não encontrado"));
 
-        // atualiza os campos editáveis
-        nivelAcesso.setTipo(dto.tipo());
+        String tipoNormalizado = dto.tipo().trim().toUpperCase();
 
-        NivelAcesso nivelAcessoAtualizado = nivelAcessoRepository.save(nivelAcesso);
+        // 🔥 verifica duplicidade ignorando o próprio ID
+        nivelAcessoRepository.findByTipo(tipoNormalizado)
+                .filter(outro -> !outro.getId().equals(id))
+                .ifPresent(outro -> {
+                    throw new RuntimeException("Tipo de acesso já existe");
+                });
 
-        return toSaidaDTO(nivelAcessoRepository.save(nivelAcessoAtualizado));
+        nivelAcesso.setTipo(tipoNormalizado);
+
+        return toSaidaDTO(nivelAcessoRepository.save(nivelAcesso));
     }
+
 
     public void excluir(Long id){
         nivelAcessoRepository.deleteById(id);
