@@ -14,7 +14,9 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
         t.titulo,
         t.historico,
         t.usuario.id,
-        t.usuario.nome
+        t.usuario.nome,
+        t.data_fechamento,
+        t.status
     )
     FROM Tarefa t
     ORDER BY t.titulo
