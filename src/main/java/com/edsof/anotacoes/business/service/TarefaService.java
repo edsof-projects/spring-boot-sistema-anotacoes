@@ -69,18 +69,20 @@ public class TarefaService {
         Usuario usuario = usuarioRepository.findById(dto.usuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        String historicoInicial =
-                LocalDate.now().format(formatter) + " : Tarefa criada.";
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+//
+//        String historicoInicial =
+//                LocalDate.now().format(formatter) + " : Tarefa criada.";
 
         Tarefa tarefa = new Tarefa();
         tarefa.setTitulo(dto.titulo());
-        tarefa.setHistorico(historicoInicial);
+        tarefa.setHistorico(dto.historico());
         tarefa.setUsuario(usuario);
         tarefa.setData_abertura(LocalDate.now());
         tarefa.setStatus(StatusTarefa.ABERTA);
+
         return tarefaRepository.save(tarefa);
+
     }
 
     private String novaLinhaHistorico(String mensagem) {
@@ -90,42 +92,32 @@ public class TarefaService {
     }
 
     // UPDATE
-    public TarefaSaidaDTO editar(TarefaSaidaDTO dto, Long id) {
+    public TarefaSaidaDTO editar(TarefaEntradaDTO dto, Long id) {
 
         Tarefa tarefa = tarefaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
 
         tarefa.setTitulo(dto.titulo());
+        tarefa.setHistorico(dto.historico());
 
-        // HISTÓRICO NAO PRECISA COLOCAR A DATA ENTRE SOMENTE COM A STRING
-        String historicoAtual   = tarefa.getHistorico();
-        StringBuilder historico = new StringBuilder(
-                historicoAtual != null ? historicoAtual : ""
-        );
-
-        historico.append("\n")
-                .append(novaLinhaHistorico(dto.historico()));
-
-        tarefa.setHistorico(historico.toString());
-
-        // STATUS
-        if (dto.status() != null) {
-            tarefa.setStatus(dto.status());
-            historico.append("\n")
-                    .append(novaLinhaHistorico(
-                            "Status alterado para " + dto.status()
-                    ));
-        }
-
-        // DATA DE FECHAMENTO
         if (dto.data_fechamento() != null) {
             tarefa.setData_fechamento(dto.data_fechamento());
-            historico.append("\n")
-                    .append(novaLinhaHistorico("Tarefa finalizada."));
+            tarefa.setStatus(StatusTarefa.FECHADA);
         }
 
         return toSaidaDTO(tarefaRepository.save(tarefa));
     }
+
+    public TarefaSaidaDTO fechar(Long id) {
+        Tarefa tarefa = tarefaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
+
+        tarefa.setData_fechamento(LocalDate.now());
+        tarefa.setStatus(StatusTarefa.FECHADA);
+
+        return toSaidaDTO(tarefaRepository.save(tarefa));
+    }
+
 
     public void excluir(Long id) {
         tarefaRepository.deleteById(id);

@@ -34,8 +34,16 @@ public class TarefaController {
     }
 
     @PutMapping("/{id}")
-    public TarefaSaidaDTO editar(@RequestBody TarefaSaidaDTO dto, @PathVariable Long id){
-        return tarefaService.editar(dto, id);
+    public ResponseEntity<TarefaSaidaDTO> editar(
+            @PathVariable Long id,
+            @RequestBody TarefaEntradaDTO dto
+    ) {
+        return ResponseEntity.ok(tarefaService.editar(dto, id));
+    }
+
+    @PutMapping("/{id}/fechar")
+    public ResponseEntity<TarefaSaidaDTO> fechar(@PathVariable Long id) {
+        return ResponseEntity.ok(tarefaService.fechar(id));
     }
 
     @DeleteMapping("/{id}")
