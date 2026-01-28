@@ -19,6 +19,7 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
         t.status
     )
     FROM Tarefa t
+    WHERE t.status = 'ABERTA'
     ORDER BY t.titulo
     """)
     List<TarefaSaidaDTO> listarTarefas();
