@@ -69,11 +69,6 @@ public class TarefaService {
         Usuario usuario = usuarioRepository.findById(dto.usuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//
-//        String historicoInicial =
-//                LocalDate.now().format(formatter) + " : Tarefa criada.";
-
         Tarefa tarefa = new Tarefa();
         tarefa.setTitulo(dto.titulo());
         tarefa.setHistorico(dto.historico());
@@ -112,8 +107,22 @@ public class TarefaService {
         Tarefa tarefa = tarefaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
 
+        LocalDate hoje = LocalDate.now();
+        String dataFormatada = hoje.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
         tarefa.setData_fechamento(LocalDate.now());
         tarefa.setStatus(StatusTarefa.FECHADA);
+
+        // 🔹 Atualiza histórico
+        String historicoAtual = tarefa.getHistorico();
+
+        String novaLinha = dataFormatada + " : Tarefa fechada.";
+
+        if (historicoAtual == null || historicoAtual.isBlank()) {
+            tarefa.setHistorico(novaLinha);
+        } else {
+            tarefa.setHistorico(historicoAtual + "\n" + novaLinha);
+        }
 
         return toSaidaDTO(tarefaRepository.save(tarefa));
     }
