@@ -53,9 +53,14 @@ public class TarefaService {
         return tarefa;
     }
 
-    public List<TarefaSaidaDTO> listarTodas() {
-        return tarefaRepository.listarTarefas();
+    public List<TarefaSaidaDTO> listarTarefas() {
+
+        Long usuarioId  = 2L;      // usuário simulado
+        boolean isAdmin = true;   // troque para true e veja todas
+
+        return tarefaRepository.listarTarefas(usuarioId, isAdmin);
     }
+
 
     public TarefaSaidaDTO buscarPorId(Long id) {
         Tarefa tarefa = tarefaRepository.findById(id)
@@ -133,4 +138,3 @@ public class TarefaService {
     }
 
 }
-

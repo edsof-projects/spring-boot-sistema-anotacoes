@@ -16,7 +16,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             u.nome,
             u.email,
             n.tipo,
-            n.id
+            n.id,
+            u.urlfoto
         )
         FROM Usuario u
         JOIN u.nivelAcesso n

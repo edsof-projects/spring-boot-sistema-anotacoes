@@ -37,5 +37,8 @@ public class Usuario {
     @Column(name = "datacad", nullable = false)
     private LocalDate datacad;
 
+    @Column(name = "urlfoto", length = 255, nullable = true)
+    private String urlfoto;
+
 }
 

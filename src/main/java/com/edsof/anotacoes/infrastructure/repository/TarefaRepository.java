@@ -4,6 +4,7 @@ import com.edsof.anotacoes.infrastructure.dto.TarefaSaidaDTO;
 import com.edsof.anotacoes.infrastructure.entity.Tarefa;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -20,7 +21,14 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
     )
     FROM Tarefa t
     WHERE t.status = 'ABERTA'
+      AND (
+           :isAdmin = true
+           OR t.usuario.id = :usuarioId
+      )
     ORDER BY t.titulo
-    """)
-    List<TarefaSaidaDTO> listarTarefas();
+""")
+    List<TarefaSaidaDTO> listarTarefas(
+            @Param("usuarioId") Long usuarioId,
+            @Param("isAdmin") boolean isAdmin
+    );
 }
