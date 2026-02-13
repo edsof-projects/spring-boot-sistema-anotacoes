@@ -10,9 +10,17 @@ import com.edsof.anotacoes.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Value;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +29,49 @@ public class UsuarioService {
     private final UsuarioRepository     usuarioRepository;
     private final NivelAcessoRepository nivelAcessoRepository;
     private final PasswordEncoder       passwordEncoder;
+    private static final String FOTO_PADRAO = "default.png";
 
     // Entity → DTO de SAÍDA
     private UsuarioSaidaDTO toSaidaDTO(Usuario usuario) {
+        String nomeFoto =
+                (usuario.getUrlfoto() == null || usuario.getUrlfoto().isBlank())
+                        ? "default-user.png"
+                        : usuario.getUrlfoto();
+
+        String urlFoto = "http://localhost:8080/uploads/usuarios/" + nomeFoto;
+
         return new UsuarioSaidaDTO(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
                 usuario.getNivelAcesso().getTipo(),
-                usuario.getNivelAcesso().getId()
+                usuario.getNivelAcesso().getId(),
+                urlFoto
         );
+    }
+
+    @Value("${app.upload.dir}")
+    private String uploadDir;
+
+    public Usuario salvarFoto(Long id, MultipartFile file) throws IOException {
+
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+        Path uploadPath = Paths.get(uploadDir + "/usuarios");
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Path filePath = uploadPath.resolve(fileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        usuario.setUrlfoto(fileName);
+
+        return usuarioRepository.save(usuario);
     }
 
     // DTO de ENTRADA → Entity

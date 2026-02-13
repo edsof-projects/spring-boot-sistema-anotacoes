@@ -18,8 +18,8 @@ public class TarefaController {
     private final TarefaService tarefaService;
 
     @GetMapping
-    public List<TarefaSaidaDTO> listarTodas() {
-        return tarefaService.listarTodas();
+    public List<TarefaSaidaDTO> listar() {
+        return tarefaService.listarTarefas();
     }
 
     @GetMapping("/{id}")

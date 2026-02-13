@@ -5,5 +5,6 @@ public record UsuarioSaidaDTO(
         String nome,
         String email,
         String acesso,
-        Long nivelAcessoId
+        Long nivelAcessoId,
+        String foto
 ){}
