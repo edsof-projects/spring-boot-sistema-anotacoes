@@ -1,9 +1,15 @@
 package com.edsof.anotacoes.infrastructure.dto;
 
-public record UsuarioEntradaDTO(
-        String nome,
-        String email,
-        String senha,
-        Long nivelAcessoId
-) {}
+import org.springframework.web.multipart.MultipartFile;
+import lombok.Data;
+
+@Data
+public class UsuarioEntradaDTO {
+
+    private String nome;
+    private String email;
+    private String senha;
+    private Long nivelAcessoId;
+    private MultipartFile foto;
+}
 
