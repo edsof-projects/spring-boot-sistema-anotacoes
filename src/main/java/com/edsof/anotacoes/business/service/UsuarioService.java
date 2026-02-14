@@ -29,16 +29,21 @@ public class UsuarioService {
     private final UsuarioRepository     usuarioRepository;
     private final NivelAcessoRepository nivelAcessoRepository;
     private final PasswordEncoder       passwordEncoder;
-    private static final String FOTO_PADRAO = "default.png";
+    private static final String FOTO_PADRAO = "default-photo.png";
+
+    @Value("${app.upload.dir}")
+    private String uploadDir;
 
     // Entity → DTO de SAÍDA
     private UsuarioSaidaDTO toSaidaDTO(Usuario usuario) {
         String nomeFoto =
                 (usuario.getUrlfoto() == null || usuario.getUrlfoto().isBlank())
-                        ? "default-user.png"
+                        ? "default-photo.png"
                         : usuario.getUrlfoto();
 
         String urlFoto = "http://localhost:8080/uploads/usuarios/" + nomeFoto;
+
+        System.out.println(usuario.getNivelAcesso());
 
         return new UsuarioSaidaDTO(
                 usuario.getId(),
@@ -49,9 +54,6 @@ public class UsuarioService {
                 urlFoto
         );
     }
-
-    @Value("${app.upload.dir}")
-    private String uploadDir;
 
     public Usuario salvarFoto(Long id, MultipartFile file) throws IOException {
 
@@ -77,17 +79,17 @@ public class UsuarioService {
     // DTO de ENTRADA → Entity
     private Usuario toEntity(UsuarioEntradaDTO dto) {
 
-        if (dto.nivelAcessoId() == null) {
+        if (dto.getNivelAcessoId() == null) {
             throw new RuntimeException("nivelAcessoId é obrigatório");
         }
 
-        NivelAcesso nivelAcesso = nivelAcessoRepository.findById(dto.nivelAcessoId())
+        NivelAcesso nivelAcesso = nivelAcessoRepository.findById(dto.getNivelAcessoId())
                 .orElseThrow(() -> new RuntimeException("Nível de acesso não encontrado"));
 
         Usuario usuario = new Usuario();
-        usuario.setNome(dto.nome());
-        usuario.setEmail(dto.email());
-        usuario.setSenha(passwordEncoder.encode(dto.senha()));
+        usuario.setNome(dto.getNome());
+        usuario.setEmail(dto.getEmail());
+        usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
         usuario.setNivelAcesso(nivelAcesso);
         usuario.setDatacad(LocalDate.now());
 
@@ -105,28 +107,44 @@ public class UsuarioService {
     }
 
     // CREATE
-    public UsuarioSaidaDTO cadastrar(UsuarioEntradaDTO dto) {
-        try {
-            emailExiste(dto.email());
-            Usuario usuario = toEntity(dto);
-            return toSaidaDTO(usuarioRepository.save(usuario));
-        }catch (ConflictException e){
-            throw  new ConflictException("Email já cadastrado", e.getCause());
+    public UsuarioSaidaDTO cadastrar(UsuarioEntradaDTO dto) throws IOException {
+        System.out.println("Entrou no cadastrar");
+
+        // Valida email
+        emailExiste(dto.getEmail());
+
+        // Converte DTO → entidade
+        Usuario usuario = toEntity(dto);
+
+        // Upload de foto
+        if (dto.getFoto() != null && !dto.getFoto().isEmpty()) {
+            String nomeArquivo = UUID.randomUUID() + "_" + dto.getFoto().getOriginalFilename();
+
+            // Usa uploadDir configurado
+            Path caminho = Paths.get(uploadDir + nomeArquivo);
+            Files.createDirectories(caminho.getParent());
+            Files.copy(dto.getFoto().getInputStream(), caminho, StandardCopyOption.REPLACE_EXISTING);
+
+            // Salva só o nome do arquivo ou caminho relativo
+            usuario.setUrlfoto(nomeArquivo);
+        } else {
+            usuario.setUrlfoto(FOTO_PADRAO);
         }
+
+        // Salva no banco
+        Usuario salvo = usuarioRepository.save(usuario);
+        System.out.println("Salvo ID: " + salvo.getId());
+
+        return toSaidaDTO(salvo);
     }
 
     public boolean verificaEmailExistente(String email){
         return usuarioRepository.existsByEmail(email);
     }
 
-    public void emailExiste(String email){
-        try {
-            boolean existe = verificaEmailExistente(email);
-            if (existe){
-                throw new ConflictException("Duplicidade : o email "+email+" já esta cadastrado");
-            }
-        }catch (ConflictException e){
-            throw  new ConflictException("Email já cadastrado", e.getCause());
+    public void emailExiste(String email) {
+        if (verificaEmailExistente(email)) {
+            throw new ConflictException("Duplicidade: o email " + email + " já está cadastrado");
         }
     }
 
